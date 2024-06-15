@@ -25,7 +25,7 @@ int closetag(const string& html, int start) {
 }
 
 // Fungsi untuk melakukan tokenisasi HTML
-vector<string> tokenize(const string& html_content) {
+vector<string> tagHTML(const string& html_content) {
     vector<string> tokens;
     int pos = 0;
 
@@ -62,7 +62,7 @@ bool parser(const vector<string>& tokens, const unordered_map<string, unordered_
         } else if (parse_table.find(top) != parse_table.end() && parse_table.at(top).find(read) != parse_table.at(top).end()) {
             string production = parse_table.at(top).at(read);
             if (!production.empty()) {
-                vector<string> productionTokens = tokenize(production);
+                vector<string> productionTokens = tagHTML(production);
                 for (auto it = productionTokens.rbegin(); it != productionTokens.rend(); ++it) {
                     parseStack.push(*it);
                 }
@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
     cout << "Isi file tag pada file HTML:" << endl;
     cout << html_content << endl;
 
-    vector<string> tokens = tokenize(html_content);
+    vector<string> tokens = tagHTML(html_content);
 
     unordered_map<string, unordered_map<string, string>> parse_table = {
         {"S", {{"<html>", "<html> A </html>"}}},
