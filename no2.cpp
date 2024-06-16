@@ -34,6 +34,27 @@ vector<string> extractTags(const string& htmlContent) {
 }
 // =================================================================
 
+string extractContent(const string& tag) {
+    size_t start = tag.find('<');
+    size_t end = tag.find('>');
+    
+    if (start != string::npos && end != string::npos && start < end) {
+        return tag.substr(start + 1, end - start - 1);
+    } else {
+        return ""; 
+    }
+}
+
+
+string extractTagName(const string& tag) {
+    // Pastikan tag dimulai dengan "/"
+    if (tag.size() > 1 && tag[0] == '/') {
+        return tag.substr(1); // Ambil substring setelah "/"
+    } else {
+        return ""; // Jika tidak dimulai dengan "/", kembalikan tag itu sendiri
+    }
+}
+
 vector<string> wajibBener1 = {"<html>" ,"</html>"};
 vector<string> wajibBener2 = {"<html>","<head>","</body>","</html>"};
 
@@ -100,21 +121,62 @@ int hitungElmList(listHTML l){
     return hasil;
 }
 
-bool cekStrukturHTML(listHTML l){
-    adrHTML p ,q;
+bool cekTagTutup(listHTML l , string tag){
+    adrHTML p,q;
     p = l.first;
-    q  = l.last;
 
-    if (hitungElmList(l) == 2 ){
-        if ((p->info == wajibBener1[0]) &&  (q->info == wajibBener1[1])){
+    while (p != NULL){
+        if (p->info == tag){
+            break;
+        }
+        p = p->next;
+    }
+    if (p == NULL){
+        return false;
+    }
+
+    if(p->info[0] == '/'){
+        return false;
+    }else {
+        q = p->next;
+        while(q != NULL){
+            if (extractTagName(extractContent(q->info)) == extractContent(p->info)){
+                return true;
+            }
+            q = q->next;
+        }
+        return false;
+    }
+    return false;
+}
+
+bool cekStrukturHTML(listHTML l) {
+    adrHTML p = l.first;
+    adrHTML r = l.last;
+    int i = 1;
+
+    // Memeriksa kondisi wajib jika jumlah elemen adalah 2
+    if (hitungElmList(l) == 2) {
+        if ((p->info == wajibBener1[0]) && (r->info == wajibBener1[1])) {
             return true;
-        }else {
+        } else {    
             return false;
         }
-    }else {
-        if (((p->info == wajibBener2[0]) && (q->info == wajibBener2[3])) && ((p->next->info == wajibBener2[1])&&(q->prev->info == wajibBener2[2]))){
+    } else {
+        // Memeriksa kondisi wajib jika jumlah elemen lebih dari 2
+        if ((p->info == wajibBener2[0]) && (r->info == wajibBener2[3]) && 
+            (p->next->info == wajibBener2[1]) && (r->prev->info == wajibBener2[2])) {
+            adrHTML q = p->next->next; // Mulai setelah </head>
+            while (q != r->prev) { // Berhenti sebelum </body>
+                if (q->info[1] != '/' && q->info != "<body>") {
+                    if (!cekTagTutup(l, q->info)) {
+                        return false;
+                    }
+                }
+                q = q->next;
+            }
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -138,12 +200,15 @@ int main(int argc, char* argv[]) {
     printAllList(l);
     cout << endl<<endl;
 
+
     if(cekStrukturHTML(l)){
         cout << "Accepted" <<endl;
     }else {
         cout << "Rejected" <<endl;
     }
-    
+
+    cout << endl;
+
     return 0;
 }
 
