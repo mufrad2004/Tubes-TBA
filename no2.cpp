@@ -166,7 +166,7 @@ bool cekStrukturHTML(listHTML l) {
         // Memeriksa kondisi wajib jika jumlah elemen lebih dari 2
         if ((p->info == wajibBener2[0]) && (r->info == wajibBener2[3]) && 
             (p->next->info == wajibBener2[1]) && (r->prev->info == wajibBener2[2])) {
-            adrHTML q = p->next->next; // Mulai setelah </head>
+            adrHTML q = p->next->next; // Mulai setelah <head>
             while (q != r->prev) { // Berhenti sebelum </body>
                 if (q->info[1] != '/' && q->info != "<body>") {
                     if (!cekTagTutup(l, q->info)) {

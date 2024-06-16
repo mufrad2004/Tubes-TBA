@@ -70,8 +70,6 @@ void printAllList(listHTML l){
     }
 }
 
-
-
 bool cekTagHTML(listHTML l){
     adrHTML p;
     string tag = "";
@@ -95,7 +93,6 @@ bool cekTagHTML(listHTML l){
 
         }
     }
-    p = l.first ->next;
     return cekTagYangDigunakan(tag);
 }
 
